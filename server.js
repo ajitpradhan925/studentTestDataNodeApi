@@ -26,7 +26,7 @@ app.use('/api/student', require('./routes/student'));
 
 const port = 3000 || process.env.PORT;
 const server = app.listen(port,
-    console.log(`Server is rinning on port ${PORT}`.yellow.bold)
+    console.log(`Server is rinning on port ${port}`.yellow.bold)
 );
 
 
