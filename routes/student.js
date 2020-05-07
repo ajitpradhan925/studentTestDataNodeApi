@@ -1,128 +1,172 @@
 const express = require('express');
 const router = express.Router();
+
 const Student = require('../models/Student');
 
-/** Add student API */
-router.post('/', async (req, res, next) => {
 
+/***
+ * Add Student Api 
+ * Method: POST
+ */
+
+ router.post('/add_student',async (req, res, next) => {
+
+    
     try {
-        const student = await Student.findOne({phone: req.body.phone});
+
+        const student = await Student.findOne({ phone: req.body.phone});
+
         if(student) {
             return res.json({
                 success: false,
-                message: "Student already added with this mobile no."
+                message: "Student already registered with this phone number."
             });
-           
         } else {
             let newStudent = await Student.create(req.body);
+
             res.json({
                 success: true,
                 message: "Student added successfully",
                 student: newStudent
-            })
-            
-           
+            });
         }
-    } catch(err) {
-        next(err);
-    }
-});
 
 
-
-/**
- * GET ALL STUDENTS
- */
-
- router.get('/', async (req, res, next) => {
- 
-    try {
-        let student = await Student.find({});
-        res.json({
-            message: true,
-            total: student.length,
-            students: student
-        })
-    } catch (error) {
+    } catch(error) {
         next(error);
     }
+    
+    res.json({
+        success: true,
+        message: "Student added successfully."
+    });
  });
 
-
- 
-/**
- * GET A  SINGLE STUDENT
- */
-
-router.get('/:id', async (req, res, next) => {
- 
-    try {
-        let student = await Student.findById(req.params.id);
-        res.json({
-            message: true,
-            student: student
-        })
-    } catch (error) {
-        next(error);
-    }
- })
-
-
- 
-/**
- * UPDATE A  SINGLE STUDENT
- */
-
-router.put('/:id', async (req, res, next) => {
- 
-    try {
-        let student = await Student.findById(req.params.id);
-        if(!student) {
-            return res.json({
-                success: false,
-                message: 'Student does not exits.'
-            })
-        }
-        
-        let updateData = await Student.findByIdAndUpdate(
-            req.params.id, req.body, {
-                new: true,
-                runValidators: true
-            }
-        );
-        res.json({
-            message: true,
-            student: updateData
-        })
-    } catch (error) {
-        next(error);
-    }
- });
 
 
  /**
-  * Delete a student
+  * Get all students
+  * Method GET
   */
 
-  router.delete('/:id', async (req, res, next) => {
-    try {
-        let student = await Student.findById(req.params.id);
-        if(!student) {
-            return res.json({
-                success: false,
-                message: 'Student does not exits.'
-            })
-        }
-        
-        await student.remove();
+  router.get('/all_students', async (req, res, next) => {
+     try {
+        const student = await Student.find({});
 
         res.json({
             success: true,
-            message: 'User successfully deleted.',
-            data: {}
-        });
-    } catch(error) {
-        
-    }  
-  })
-module.exports = router;
+            total: student.length,
+            students: student
+        })
+     } catch(err) {
+        next(err);
+     }
+  });
+
+
+  /**
+   * Get Single Student By Id
+   * Method GET
+   */
+
+
+
+   router.get('/single_user/:id', async (req, res, next) => {
+       try {
+
+            // Check if student exist or not
+            let student = await Student.findById(req.params.id);
+
+            if(!student) {
+                return res.json({
+                    success: false,
+                    message: "Student ID doesn't exist"
+
+                });
+            } else {
+                
+                res.json({
+                    success: true,
+                    message: "Student found successfully",
+                    student: student
+                });
+            }
+       } catch(error) {
+           next(error);
+       }
+   });
+
+
+   /**
+    * Update a single student data
+    * Method PUT
+    */
+
+    
+   router.put('/update_student/:id', async (req, res, next) => {
+       try {
+
+             // Check if student exist or not
+             let student = await Student.findById(req.params.id);
+
+             if(!student) {
+                 return res.json({
+                     success: false,
+                     message: "Student ID doesn't exist"
+ 
+                 });
+             } else {
+                 
+                let updateStudent = await Student.findByIdAndUpdate(req.params.id, req.body, {
+                    new: true,
+                    runVaidator: true
+                });
+
+                res.json({
+                    success: false,
+                    message: "Student updated successfully.",
+                    student: updateStudent
+                });
+             }
+       } catch (error) {
+           next(error);
+       }
+   });
+
+
+
+
+    /**
+    * Delete a single student data
+    * Method DELETE
+    */
+
+   router.delete('/delete_student/:id', async (req, res, next) => {
+    try {
+
+          // Check if student exist or not
+          let student = await Student.findById(req.params.id);
+
+          if(!student) {
+              return res.json({
+                  success: false,
+                  message: "Student ID doesn't exist"
+
+              });
+          } else {
+              
+           await student.remove();
+           res.json({
+               success: true,
+               message: `Student with id ${req.params.id} deleted successfully`,
+               student: {}
+           });
+
+          }
+        } catch(error) {
+            next(error);
+        }
+
+    });
+
+ module.exports = router;

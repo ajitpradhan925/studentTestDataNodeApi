@@ -21,11 +21,11 @@ app.use(express.json({
     extended: true
 }));
 
-app.use('/api', require('./routes/students'));
+app.use('/api', require('./routes/student'));
 
 const port = 3000 || process.env.PORT;
 
-app.listen(port, 
+const server = app.listen(port, 
     console.log(`Server is running on port ${port}`.yellow.underline)
 );
 
