@@ -1,33 +1,34 @@
-const express  = require('express');
-const morgan  = require('morgan');
-const dotenv = require('dotenv');
-const connectDB = require('./config/db');
+const express = require('express');
+const morgan = require('morgan');
 const colors = require('colors');
+const dotenv = require('dotenv');
+const connectDb = require('./config/db');
 
-// use dotenv files
-dotenv.config({ path: './config/config.env' });
+// Add environment values
+dotenv.config({ path: './config/config.env'});
 
 // Connect to database
-connectDB();
+connectDb();
 
 const app = express();
 
+
 app.use(morgan('dev'));
-// body parser
+
+// Include body parser
 app.use(express.json());
 app.use(express.json({
     extended: true
 }));
 
-// use routes
-app.use('/api/student', require('./routes/student'));
-
-
+app.use('/api', require('./routes/students'));
 
 const port = 3000 || process.env.PORT;
-const server = app.listen(port,
-    console.log(`Server is rinning on port ${port}`.yellow.bold)
+
+app.listen(port, 
+    console.log(`Server is running on port ${port}`.yellow.underline)
 );
+
 
 
 // Handle unhandled promise rejections
